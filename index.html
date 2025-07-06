@@ -1,18 +1,42 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Riviera Jomtien VR</title>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #000; color: #fff; text-align: center; }
-    img { max-width: 90%; height: auto; margin-top: 2rem; border-radius: 8px; }
-  </style>
-</head>
-<body>
-  <h1>Riviera Jomtien Virtual Tour</h1>
-  <p>Sample VR Image Preview</p>
-  <img src="livingroom.jpg" alt="Livingroom View"/>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Riviera Jomtien Livingroom VR</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+    <script>
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const geometry = new THREE.SphereGeometry(500, 60, 40);
+      geometry.scale(-1, 1, 1);
+      const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enablePan = false;
+      camera.position.set(0, 0, 0.1);
+      controls.update();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
 </html>
