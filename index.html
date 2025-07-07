@@ -9,42 +9,37 @@
   </style>
 </head>
 <body>
-  <!-- ✅ 반드시 three.min.js 먼저 로드 -->
+  <!-- ✅ THREE.js (UMD 방식 CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
-  <!-- ✅ 그다음 OrbitControls를 로드 -->
+  <!-- ✅ OrbitControls (전역 등록 가능 버전) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
   <script>
-    // 1. 씬, 카메라, 렌더러 설정
+    // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75, 
-      window.innerWidth / window.innerHeight, 
-      0.1, 
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // 2. 파노라마 이미지 로딩 (구 형태에 텍스처 매핑)
+    // 2. Panorama Sphere
     const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1);  // 내부에서 보이게 반전
+    geometry.scale(-1, 1, 1); // 내부 반전
 
     const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    // 3. OrbitControls 활성화 (마우스로 회전)
+    // 3. Orbit Controls
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
-    camera.position.set(0, 0, 0.1);  // 중심에 카메라
+    camera.position.set(0, 0, 0.1);
     controls.update();
 
-    // 4. 애니메이션 루프
+    // 4. Animate
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
