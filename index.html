@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Riviera Jomtien VR View</title>
+  <meta charset="UTF-8">
+  <title>Riviera Jomtien Panorama 5:1</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; }
     canvas { display: block; }
@@ -15,31 +15,33 @@
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
-      75, window.innerWidth / window.innerHeight, 0.1, 1000
+      75, window.innerWidth / window.innerHeight, 0.1, 2000
     );
-    camera.position.set(0, 0, 0.1);
+    camera.position.set(0, 0, 100);  // 내부에서 바라보도록 살짝 전진
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // 👉 Cylinder geometry based on 5:1 image (wide and short)
-    const radius = 500;
-    const height = 100;
-    const radialSegments = 64;
-    const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments, 1, true);
-    geometry.scale(-1, 1, 1); // Invert for inside viewing
+    // CylinderGeometry (radiusTop, radiusBottom, height, radialSegments)
+    const geometry = new THREE.CylinderGeometry(500, 500, 500, 64, 1, true);
+    geometry.scale(-1, 1, 1);  // 내부에서 보기 위해 반전
 
     const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
-    const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      side: THREE.BackSide
+    });
 
-    const cylinder = new THREE.Mesh(geometry, material);
-    scene.add(cylinder);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
-    controls.rotateSpeed = 0.4;
+    controls.rotateSpeed = 0.3;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.3;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -48,7 +50,6 @@
     }
     animate();
 
-    // 🎯 화면 리사이즈 대응
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
