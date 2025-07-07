@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Riviera Jomtien Livingroom VR</title>
-    <style>
-      html, body { margin: 0; height: 100%; overflow: hidden; }
-      canvas { display: block; }
-    </style>
-  </head>
-  <body>
-    <script src="three.min.js"></script>
-    <script src="OrbitControls.js"></script>
-    <script>
+<head>
+  <meta charset="UTF-8" />
+  <title>Riviera Jomtien Livingroom VR</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+  <script src="three.min.js" defer></script>
+  <script src="OrbitControls.js" defer></script>
+</head>
+<body>
+  <script>
+    window.onload = function () {
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       const renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
@@ -36,6 +37,7 @@
         renderer.render(scene, camera);
       }
       animate();
-    </script>
-  </body>
+    };
+  </script>
+</body>
 </html>
