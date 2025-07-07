@@ -1,62 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Riviera Jomtien VR View</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-    canvas {
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <!-- CDN으로 three.js + OrbitControls 불러오기 -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.min.js"></script>
-
-  <script>
-    // 기본 장면 설정
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // 텍스처 로딩
-    const loader = new THREE.TextureLoader();
-    loader.load('livingroom_panorama.jpg', function(texture) {
-      // 실린더 지오메트리 (5:1 비율용)
-      const geometry = new THREE.CylinderGeometry(500, 500, 500, 64, 1, true);
-      geometry.scale(-1, 1, 1); // 안쪽 보기
-
-      const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
-
-      // 카메라 초기 위치
-      camera.position.set(0, 0, 0.1);
-
-      // 컨트롤 설정
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false;
-      controls.enablePan = false;
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.5;
-
-      // 애니메이션 루프
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
+  <head>
+    <meta charset="utf-8" />
+    <title>Riviera Jomtien VR View</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+                
+                   
+                       
+     
+            
+      canvas { display: block; }
+     
+    </style>
+  </head>
+  <body>
+                                                          
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script>
+      // OrbitControls 바인딩
+      if (typeof OrbitControls !== 'undefined') {
+        THREE.OrbitControls = OrbitControls;
       }
 
-      animate();
-    });
-  </script>
-</body>
+          
+                           
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.set(0, 0, 0.1);
+                                                            
+                                                   
+
+                       
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+                                                                              
+                                                
+
+      const loader = new THREE.TextureLoader();
+      loader.load('livingroom_panorama.jpg', function (texture) {
+        const geometry = new THREE.CylinderGeometry(500, 500, 500, 64, 1, true);
+        geometry.scale(-1, 1, 1); // 내부 보기용
+
+        const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // OrbitControls 인스턴스 생성
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+
+                               
+        function animate() {
+          requestAnimationFrame(animate);
+          controls.update();
+          renderer.render(scene, camera);
+        }
+
+        animate();
+      });
+    </script>
+  </body>
 </html>
