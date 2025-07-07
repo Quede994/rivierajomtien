@@ -45,28 +45,40 @@
   </script>
 
   <!-- ✅ 3. Main Code -->
-  <script>
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 1100); // ★ FOV 90~100 추천
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
 
-    const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1);
-    const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+  // 스피어(구형)에 파노라마 텍스처 적용
+  const geometry = new THREE.SphereGeometry(500, 60, 40);
+  geometry.scale(-1, 1, 1); // 안쪽에서 보는 것처럼 뒤집기
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    camera.position.set(0, 0, 0.1);
+  const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
+  const material = new THREE.MeshBasicMaterial({ map: texture });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
 
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-    animate();
-  </script>
+  // OrbitControls 추가 (카메라 회전용)
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false;
+  controls.enablePan = false;
+  controls.rotateSpeed = 0.3;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.5;
+
+  camera.position.set(0, 0, 0.01); // 중심 거의 근처에서 시작
+  controls.update();
+
+  // 애니메이션 루프
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
 </body>
 </html>
