@@ -2,10 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Riviera Jomtien Panorama 5:1</title>
+  <title>Riviera Jomtien VR View</title>
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; }
-    canvas { display: block; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -14,41 +20,39 @@
   <script>
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(
-      75, window.innerWidth / window.innerHeight, 0.1, 2000
-    );
-    camera.position.set(0, 0, 100);  // 내부에서 바라보도록 살짝 전진
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+    camera.position.set(0, 0, 100);
 
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // CylinderGeometry (radiusTop, radiusBottom, height, radialSegments)
-    const geometry = new THREE.CylinderGeometry(500, 500, 500, 64, 1, true);
-    geometry.scale(-1, 1, 1);  // 내부에서 보기 위해 반전
+    const loader = new THREE.TextureLoader();
+    loader.load('livingroom_panorama.jpg', function(texture) {
+      const geometry = new THREE.CylinderGeometry(500, 500, 500, 64, 1, true);
+      geometry.scale(-1, 1, 1); // 내부 보기용
 
-    const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      side: THREE.BackSide
+      const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enablePan = false;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.5;
+
+      animate();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+    }, undefined, function(error) {
+      console.error("텍스처 로딩 실패:", error);
+      alert("이미지를 불러오지 못했습니다.");
     });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.rotateSpeed = 0.3;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.3;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
