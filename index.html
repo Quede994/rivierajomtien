@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Riviera Jomtien VR</title>
+  <title>Riviera Jomtien VR (Cylinder)</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background-color: #000; }
     canvas { display: block; }
@@ -12,7 +12,7 @@
   <!-- ✅ 1. three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
-  <!-- ✅ 2. OrbitControls 간단 구현 -->
+  <!-- ✅ 2. OrbitControls (간단 구현 유지) -->
   <script>
     THREE.OrbitControls = function (camera, domElement) {
       this.object = camera;
@@ -48,7 +48,7 @@
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
-      65, // ✔ 시야각 줄여서 왜곡 완화
+      75,
       window.innerWidth / window.innerHeight,
       1,
       1100
@@ -59,15 +59,19 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1);
+    // ✅ CylinderGeometry 사용 (세로 왜곡 방지)
+    const geometry = new THREE.CylinderGeometry(500, 500, 300, 64, 1, true); // 반지름 500, 높이 300
+    geometry.scale(-1, 1, 1); // 내부 보기로 반전
 
     const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
     texture.minFilter = THREE.LinearFilter;
-    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      side: THREE.BackSide
+    });
 
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    const cylinder = new THREE.Mesh(geometry, material);
+    scene.add(cylinder);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
