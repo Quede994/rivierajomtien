@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>Riviera Jomtien Livingroom VR</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; }
@@ -9,40 +9,35 @@
   </style>
 </head>
 <body>
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/controls/OrbitControls.js';
+  <!-- three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <!-- OrbitControls를 위한 비모듈 스크립트 -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
-    // Scene, Camera, Renderer
+  <script>
+    // 씬, 카메라, 렌더러 초기화
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Sphere with inside-facing panorama texture
+    // 구체에 이미지 텍스처 매핑
     const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1);  // Flip the sphere to render inside
+    geometry.scale(-1, 1, 1); // 내부 텍스처 보기 위해 반전
     const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    // Orbit Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
+    // 카메라 컨트롤 (OrbitControls)
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
     camera.position.set(0, 0, 0.1);
     controls.update();
 
-    // Resize handling
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // Animation loop
+    // 애니메이션 루프
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
