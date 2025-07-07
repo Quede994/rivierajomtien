@@ -1,94 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Riviera Jomtien VR</title>
+  <meta charset="UTF-8" />
+  <title>Riviera Jomtien VR (Cylinder - Verified)</title>
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; background-color: #000; }
-    canvas { display: block; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <!-- 1. three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-
-  <!-- 2. OrbitControls (간단 구현) -->
-  <script>
-    THREE.OrbitControls = function (camera, domElement) {
-      this.object = camera;
-      this.domElement = domElement;
-      this.enabled = true;
-
-      const scope = this;
-      let isDragging = false;
-      let prevX = 0;
-
-      domElement.addEventListener('mousedown', function (event) {
-        isDragging = true;
-        prevX = event.clientX;
-      });
-
-      domElement.addEventListener('mousemove', function (event) {
-        if (!isDragging) return;
-        const deltaX = event.clientX - prevX;
-        scope.object.rotation.y -= deltaX * 0.005;
-        prevX = event.clientX;
-      });
-
-      domElement.addEventListener('mouseup', function () {
-        isDragging = false;
-      });
-
-      this.update = function () {};
-    };
-  </script>
-
-  <!-- 3. Main -->
   <script>
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(
-      65,
-      window.innerWidth / window.innerHeight,
-      1,
-      1100
-    );
+    // 카메라 위치: 중심에서 내부를 바라보도록
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
     camera.position.set(0, 0, 0.1);
 
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // CylinderGeometry: 반지름을 충분히 키우고 세로는 줄임
+    // ✅ CylinderGeometry: 세로 비율은 파노라마에 맞게 작게!
     const radius = 500;
-    const height = 100;
-    const radialSegments = 100;
-    const geometry = new THREE.CylinderGeometry(radius, radius, height, radialSegments, 1, true);
-    geometry.scale(-1, 1, 1); // 내부에서 보기
+    const height = 80; // 세로 작게!
+    const geometry = new THREE.CylinderGeometry(radius, radius, height, 128, 1, true);
+    geometry.scale(-1, 1, 1); // 내부 보기용 반전
 
-    const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
+    const texture = new THREE.TextureLoader().load("livingroom_panorama.jpg", () => {
+      renderer.render(scene, camera); // 이미지 로딩 후 렌더 보장
+    });
+
     texture.minFilter = THREE.LinearFilter;
+
     const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
 
     const cylinder = new THREE.Mesh(geometry, material);
     scene.add(cylinder);
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.rotateSpeed = 0.3;
+    // 기본 회전 컨트롤
+    let isDragging = false;
+    let prevX = 0;
 
-    controls.update();
+    renderer.domElement.addEventListener("mousedown", e => {
+      isDragging = true;
+      prevX = e.clientX;
+    });
+
+    renderer.domElement.addEventListener("mousemove", e => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - prevX;
+      cylinder.rotation.y -= deltaX * 0.005;
+      prevX = e.clientX;
+    });
+
+    renderer.domElement.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
 
     function animate() {
       requestAnimationFrame(animate);
-      controls.update();
       renderer.render(scene, camera);
     }
 
     animate();
 
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
