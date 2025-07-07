@@ -1858,3 +1858,5 @@ function interceptControlUp( event ) {
 }
 
 export { OrbitControls };
+
+THREE.OrbitControls = OrbitControls;
