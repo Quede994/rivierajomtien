@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Riviera Jomtien VR</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; }
@@ -9,15 +9,12 @@
   </style>
 </head>
 <body>
-  <script src="three.min.js"></script>
-  <script src="OrbitControls.js"></script>
+  <!-- ✅ CDN으로 교체 -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
   <script>
     window.addEventListener('load', () => {
-      if (!THREE || !THREE.OrbitControls) {
-        alert('THREE.js 또는 OrbitControls 로드 실패');
-        return;
-      }
-
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       const renderer = new THREE.WebGLRenderer();
@@ -43,8 +40,6 @@
           renderer.render(scene, camera);
         }
         animate();
-      }, undefined, (err) => {
-        alert('이미지 로드 실패: ' + err.message);
       });
     });
   </script>
