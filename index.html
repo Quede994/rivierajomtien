@@ -2,44 +2,66 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Riviera Jomtien Livingroom VR</title>
+  <title>Riviera Jomtien VR</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; }
     canvas { display: block; }
   </style>
 </head>
 <body>
-  <!-- ✅ THREE.js (UMD 방식 CDN) -->
+  <!-- ✅ 1. three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
-  <!-- ✅ OrbitControls (전역 등록 가능 버전) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
-
+  <!-- ✅ 2. OrbitControls 직접 THREE에 등록 -->
   <script>
-    // 1. Scene, Camera, Renderer
+    // 간단한 OrbitControls 등록 버전 (회전 기능만)
+    THREE.OrbitControls = function (camera, domElement) {
+      this.object = camera;
+      this.domElement = domElement;
+      this.enabled = true;
+
+      const scope = this;
+      let isDragging = false;
+      let prevX = 0;
+
+      domElement.addEventListener('mousedown', function (event) {
+        isDragging = true;
+        prevX = event.clientX;
+      });
+
+      domElement.addEventListener('mousemove', function (event) {
+        if (!isDragging) return;
+        const deltaX = event.clientX - prevX;
+        scope.object.rotation.y -= deltaX * 0.005;
+        prevX = event.clientX;
+      });
+
+      domElement.addEventListener('mouseup', function () {
+        isDragging = false;
+      });
+
+      this.update = function () {};
+    };
+  </script>
+
+  <!-- ✅ 3. Main Code -->
+  <script>
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // 2. Panorama Sphere
     const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); // 내부 반전
-
+    geometry.scale(-1, 1, 1);
     const texture = new THREE.TextureLoader().load('livingroom_panorama.jpg');
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    // 3. Orbit Controls
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
-    controls.enablePan = false;
     camera.position.set(0, 0, 0.1);
-    controls.update();
 
-    // 4. Animate
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
