@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
   <title>Riviera Jomtien VR View</title>
   <style>
     html, body {
@@ -15,56 +15,47 @@
   </style>
 </head>
 <body>
+  <!-- CDN으로 three.js + OrbitControls 불러오기 -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.min.js"></script>
+
   <script>
+    // 기본 장면 설정
     const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-    camera.position.set(0, 0, 100);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+    const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // 텍스처 로딩
     const loader = new THREE.TextureLoader();
     loader.load('livingroom_panorama.jpg', function(texture) {
+      // 실린더 지오메트리 (5:1 비율용)
       const geometry = new THREE.CylinderGeometry(500, 500, 500, 64, 1, true);
-      geometry.scale(-1, 1, 1); // 내부 보기용
+      geometry.scale(-1, 1, 1); // 안쪽 보기
 
       const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
       const mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
+      // 카메라 초기 위치
+      camera.position.set(0, 0, 0.1);
 
-      // Step 1: 바인딩 먼저
-    if (typeof OrbitControls !== 'undefined') {
-    THREE.OrbitControls = OrbitControls;
-    }
-    // Step 2: 바인딩 이후에 생성
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-
+      // 컨트롤 설정
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableZoom = false;
       controls.enablePan = false;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.5;
 
-      animate();
-
+      // 애니메이션 루프
       function animate() {
         requestAnimationFrame(animate);
         controls.update();
         renderer.render(scene, camera);
       }
-    }, undefined, function(error) {
-      console.error("텍스처 로딩 실패:", error);
-      alert("이미지를 불러오지 못했습니다.");
-    });
 
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      animate();
     });
   </script>
 </body>
