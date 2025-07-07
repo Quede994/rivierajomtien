@@ -26,7 +26,9 @@
       const mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
+      
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      
       controls.enableZoom = false;
       controls.enablePan = false;
       camera.position.set(0, 0, 0.1);
