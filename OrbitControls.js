@@ -5,3 +5,4 @@ THREE.OrbitControls = function (object, domElement) {
   this.enablePan = true;
   this.update = function () {};
 };
+THREE.OrbitControls = OrbitControls;
