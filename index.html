@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Cylinder VR Test</title>
+  <meta charset="UTF-8">
+  <title>Cylinder VR Final Test</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
     canvas { display: block; }
@@ -13,43 +13,38 @@
   <script>
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(
-      75, window.innerWidth / window.innerHeight, 1, 1100
-    );
-    camera.position.set(0, 0, 0.1); // 내부에 위치
+    // ✅ 카메라: Cylinder 내부 보기 위한 위치
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
+    camera.position.set(0, 0, 0); // 내부 중심점
 
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // ✅ CylinderGeometry (내부 보기용)
+    // ✅ Cylinder (반지름 500, 높이 300)
     const geometry = new THREE.CylinderGeometry(500, 500, 300, 64, 1, true);
-    geometry.scale(-1, 1, 1); // 반전 중요
+    geometry.scale(-1, 1, 1); // 반전 → 내부 보기
 
-    // ✅ 외부 테스트 텍스처
-    const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/2294472375_24a3b8ef46_o.jpg');
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      side: THREE.BackSide
-    });
+    // ✅ 텍스처
+    const texture = new THREE.TextureLoader().load("livingroom_panorama.jpg");
+    const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
 
     const cylinder = new THREE.Mesh(geometry, material);
     scene.add(cylinder);
 
-    // ✅ 수동 회전
-    let isDragging = false;
-    let prevX = 0;
-    renderer.domElement.addEventListener('mousedown', (e) => {
+    // ✅ 수동 마우스 회전
+    let isDragging = false, prevX = 0;
+    renderer.domElement.addEventListener("mousedown", e => {
       isDragging = true;
       prevX = e.clientX;
     });
-    renderer.domElement.addEventListener('mousemove', (e) => {
+    renderer.domElement.addEventListener("mousemove", e => {
       if (!isDragging) return;
       const deltaX = e.clientX - prevX;
       cylinder.rotation.y -= deltaX * 0.005;
       prevX = e.clientX;
     });
-    renderer.domElement.addEventListener('mouseup', () => {
+    renderer.domElement.addEventListener("mouseup", () => {
       isDragging = false;
     });
 
